@@ -19,8 +19,12 @@ const checkAdminRole = async (userID) => {
 // POST route to add a candidate
 router.post('/', jwtAuthMiddleware, async (req, res) =>{
     try{
-        if(!(await checkAdminRole(req.user.id)))
-            return res.status(403).json({message: 'user does not have admin role'});
+        if(!(await checkAdminRole(req.user.id))){
+            req.flash("error","user does not have admin role"); 
+              res.redirect("/pageadmin");
+            
+        }
+           // return res.status(403).json({message: 'user does not have admin role'});
 
         const data = req.body // Assuming the request body contains the candidate data
 
@@ -30,20 +34,25 @@ router.post('/', jwtAuthMiddleware, async (req, res) =>{
         // Save the new user to the database
         const response = await newCandidate.save();
         console.log('data saved');
-        res.status(200).json({response: response});
+        req.flash("success","candidate added successfully"); 
+          res.redirect("/pageadmin");
+        //res.status(200).json({response: response});
     }
     catch(err){
-        console.log(err);
-        res.status(500).json({error: 'Internal Server Error'});
+        req.flash("error","Internal server error"); 
+          res.redirect("/pageadmin");
     }
 })
 
-router.put('/:candidateID', jwtAuthMiddleware, async (req, res)=>{
+router.post('/update', jwtAuthMiddleware, async (req, res)=>{
     try{
-        if(!checkAdminRole(req.user.id))
-            return res.status(403).json({message: 'user does not have admin role'});
+        if(!checkAdminRole(req.user.id)){
+            req.flash("error","user does not have admin role"); 
+              res.redirect("/pageadmin");
+        }
+          //  return res.status(403).json({message: 'user does not have admin role'});
         
-        const candidateID = req.params.candidateID; // Extract the id from the URL parameter
+        const candidateID = req.body._id; // Extract the id from the URL parameter
         const updatedCandidateData = req.body; // Updated data for the person
 
         const response = await Candidate.findByIdAndUpdate(candidateID, updatedCandidateData, {
@@ -52,82 +61,113 @@ router.put('/:candidateID', jwtAuthMiddleware, async (req, res)=>{
         })
 
         if (!response) {
-            return res.status(404).json({ error: 'Candidate not found' });
-        }
 
-        console.log('candidate data updated');
-        res.status(200).json(response);
+            req.flash("error","Candidate not found"); 
+              res.redirect("/pageadmin");
+            //return res.status(404).json({ error: 'Candidate not found' });
+        }
+        req.flash("success","candidate data updated"); 
+          res.redirect("/pageadmin");
+        //console.log('candidate data updated');
+       // res.status(200).json(response);
     }catch(err){
-        console.log(err);
-        res.status(500).json({error: 'Internal Server Error'});
+        req.flash("error","Internal Server Error"); 
+          res.redirect("/pageadmin");
+        //console.log(err);
+       // res.status(500).json({error: 'Internal Server Error'});
     }
 })
 
-router.delete('/:candidateID', jwtAuthMiddleware, async (req, res)=>{
+router.post('/delete', jwtAuthMiddleware, async (req, res)=>{
     try{
-        if(!checkAdminRole(req.user.id))
-            return res.status(403).json({message: 'user does not have admin role'});
+        if(!checkAdminRole(req.user.id)){
+            req.flash("error","user does not have admin role"); 
+              res.redirect("/pageadmin");
+        }
+            //return res.status(403).json({message: 'user does not have admin role'});
         
-        const candidateID = req.params.candidateID; // Extract the id from the URL parameter
+              const candidateID = req.body._id; // Extract the id from the URL parameter
 
         const response = await Candidate.findByIdAndDelete(candidateID);
 
         if (!response) {
             return res.status(404).json({ error: 'Candidate not found' });
         }
-
-        console.log('candidate deleted');
-        res.status(200).json(response);
+        req.flash("success","candidate deleted"); 
+          res.redirect("/pageadmin");
+        //console.log('candidate deleted');
+        //res.status(200).json(response);
     }catch(err){
-        console.log(err);
-        res.status(500).json({error: 'Internal Server Error'});
+        req.flash("error","Internal Server Error"); 
+          res.redirect("/pageadmin");
+        //console.log(err);
+       // res.status(500).json({error: 'Internal Server Error'});
     }
 })
 
 // let's start voting
-router.post('/vote/:candidateID', jwtAuthMiddleware, async (req, res)=>{
-    // no admin can vote
-    // user can only vote once
-    
-    candidateID = req.params.candidateID;
-    userId = req.user.id;
+// ... other imports ...
 
-    try{
-        // Find the Candidate document with the specified candidateID
+ // Assuming you have a router
+
+// Vote Route
+router.post('/vote', jwtAuthMiddleware, async (req, res) => {
+    const candidateID = req.body._id; // Get candidateID from the form
+    const userId = req.user.id; 
+
+    try {
+        // Find the Candidate document
         const candidate = await Candidate.findById(candidateID);
-        if(!candidate){
-            return res.status(404).json({ message: 'Candidate not found' });
+        if (!candidate) {
+            req.flash("error","Candidate not found"); 
+              res.redirect("/pageuser");
+            //return res.status(404).json({ message: 'Candidate not found' });
         }
 
+        // Find the User document
         const user = await User.findById(userId);
-        if(!user){
-            return res.status(404).json({ message: 'user not found' });
-        }
-        if(user.role == 'admin'){
-            return res.status(403).json({ message: 'admin is not allowed'});
-        }
-        if(user.isVoted){
-            return res.status(400).json({ message: 'You have already voted' });
+        if (!user) {
+            req.flash("error","User not found"); 
+              res.redirect("/pageuser");
+            //return res.status(404).json({ message: 'User not found' });
         }
 
-        // Update the Candidate document to record the vote
-        candidate.votes.push({user: userId})
+        // Check if user is admin or has already voted
+        if (user.role === 'admin') {
+            req.flash("error","Admin is not allowed to vote"); 
+              res.redirect("/pageuser");
+           // return res.status(403).json({ message: 'Admin is not allowed to vote' });
+        }
+        if (user.isVoted) {
+            //req.flash("error","You have already voted"); 
+            //  res.redirect("/pageuser");
+           return res.status(400).json({ message: 'You have already voted' });
+        }
+
+        // Record the vote
+        candidate.votes.push({ user: userId });
         candidate.voteCount++;
         await candidate.save();
 
-        // update the user document
-        user.isVoted = true
+        // Update the User document
+        user.isVoted = true;
         await user.save();
+        req.flash("success","Vote recorded successfully"); 
+          res.redirect("/pageuser");
+        //return res.status(200).json({ message: 'Vote recorded successfully' });
 
-        return res.status(200).json({ message: 'Vote recorded successfully' });
-    }catch(err){
-        console.log(err);
-        return res.status(500).json({error: 'Internal Server Error'});
+    } catch (err) {
+        req.flash("error","Internal Server Error"); 
+          res.redirect("/pageuser");
+       // console.log(err);
+       // return res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
+// ... other routes ...
+
 // vote count 
-router.get('/vote/count', async (req, res) => {
+router.get('/votecount', async (req, res) => {
     try{
         // Find all candidates and sort them by voteCount in descending order
         const candidate = await Candidate.find().sort({voteCount: 'desc'});
@@ -136,14 +176,17 @@ router.get('/vote/count', async (req, res) => {
         const voteRecord = candidate.map((data)=>{
             return {
                 party: data.party,
-                count: data.voteCount
+                count: data.voteCount,
+               // id:data._id
             }
         });
-
-        return res.status(200).json(voteRecord);
+        res.render("votecounter", { voteRecord });
+        //return res.status(200).json(voteRecord);
     }catch(err){
-        console.log(err);
-        res.status(500).json({error: 'Internal Server Error'});
+        req.flash("error","Internal Server Error"); 
+          res.redirect("/pageadmin");
+        //console.log(err);
+        //res.status(500).json({error: 'Internal Server Error'});
     }
 });
 
@@ -151,13 +194,15 @@ router.get('/vote/count', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         // Find all candidates and select only the name and party fields, excluding _id
-        const candidates = await Candidate.find({}, 'name party -_id');
+        const candidates = await Candidate.find({}, 'name party _id');
 
         // Return the list of candidates
-        res.status(200).json(candidates);
+        res.render("candidatesp", { candidates });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Internal Server Error' });
+        req.flash("error","Internal Server Error"); 
+          res.redirect("/pageadmin");
+        //console.error(err);
+        //res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
