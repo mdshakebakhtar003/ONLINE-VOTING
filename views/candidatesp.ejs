@@ -1,0 +1,54 @@
+<%- include('./partials/header') %>
+        <h3 class="text-4xl text-center">VOTE WITH <span class="text-blue-400 font-semibold">CANDIDATE ID</span></h3>
+        <div class="w-full h-screen flex items-start px-20 py-20">
+            <div class="w-[75%] flex flex-col gap-5 h-screen">
+                <table class="w-full bordered-table">
+                    <thead>
+                        <tr>
+                            <th>CANDIDATE ID</th>
+                            <th>NAME</th>
+                            <th>PARTY</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% candidates.forEach(function(cand){ %>
+                            <tr>
+                                <td><%= cand._id %></td>
+                                <td><%= cand.name %></td>
+                                <td><%= cand.party %></td>
+
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+        <div class="mt-10">
+     <h4 class="text-2xl capitalize mb-5">ENTER CANDIDATE ID <br> to vote that CANDIDATE </h4>
+            <form autocomplete="off" action="/candidate/vote" method="post">
+                <input
+                    class="block bg-zinc-100 w-full px-3 py-2 border-[1px] rounded-md mb-3 border-zinc-200"
+                    type="text" placeholder="Candidate ID " name="_id">
+                <input class="px-5 block rounded-full py-3 mt-2 bg-blue-500 text-white" type="submit"
+                    value="VOTE">
+            </form>
+        </div>
+    </div>
+</div>
+<%- include('./partials/footer') %>
+
+<style>
+.bordered-table {
+  border: 1px solid blue;
+}
+
+.bordered-table tr {
+  border: 1px solid blue;
+}
+
+.bordered-table td {
+  border: 1px solid blue;
+}
+
+.bordered-table th {
+  border-right: 1px solid blue;
+}
+</style>

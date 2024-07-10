@@ -1,0 +1,21 @@
+        <%- include('./partials/header') %>
+        <h3 class="text-4xl text-center">VOTING <span class="text-blue-400 font-semibold">RESULT</span></h3>
+        <div class="w-full h-screen flex items-start px-20 py-20">
+            <div class="w-[75%] flex flex-col gap-5 h-screen">
+                <div class="flex items-start gap-5">
+                    <% voteRecord.forEach(function(vc){ %>
+                    <div class="w-60 relative bg-green-500" style="height: <%= (vc.count+15)*30%>px;">
+                        <div class="w-full h-full bg-green-500 absolute top-0 left-0 z-10"></div>
+                        <div class="flex justify-between items-center px-4 py-4">
+                            <div class="absolute top-0 left-0 px-4 py-2 bg-blue rounded-md z-20"> 
+                                <h3>PARTY=<%=  vc.party %></h3>
+                                <h4>VOTES=<%= vc.count %></h4>
+                               
+                            </div>
+                        </div>
+                    </div>
+                    <% }) %>
+                </div>
+            </div>
+        </div>
+        <%- include('./partials/footer') %>

@@ -1,0 +1,49 @@
+<%- include('./partials/header') %>
+<h3 class="text-4xl text-center">YOUR <span class="text-blue-400 font-semibold">PROFILE</span></h3>
+<div class="w-full h-screen flex items-start px-20 py-20">
+    <div class="w-[75%] flex flex-col gap-5 h-screen">
+        <table class="w-full bordered-table">
+            <thead>
+                <tr>
+                    <th class="border-right border-blue-500"> Name</th>
+                    <th class="border-right border-blue-500"> age</th>
+                    <th>Mobile</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Aadhar No</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% user.forEach(function(cand){ %>
+                    <tr>
+                        <td><%= cand.name %></td>
+                        <td><%= cand.age %></td>
+                        <td><%= cand.mobile %></td>
+                        <td><%= cand.email %></td>
+                        <td><%= cand.address %></td>
+                        <td><%= cand.aadharCardNumber %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </div>
+</div>
+<%- include('./partials/footer') %>
+
+<style>
+.bordered-table {
+    border: 1px solid blue;
+}
+
+.bordered-table tr {
+    border: 1px solid blue;
+}
+
+.bordered-table td {
+    border: 1px solid blue;
+}
+
+.bordered-table th {
+    border-right: 1px solid blue;
+}
+</style>

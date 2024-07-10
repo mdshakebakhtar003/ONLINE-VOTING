@@ -1,0 +1,57 @@
+<%- include('./partials/header') %>
+    <% if(error && error.length>0){ %>
+        <div class="absolute top-5 left-1/2 -translate-x-1/2 -translate-y-1/2 p-3 rounded-md bg-red-500">
+            <span class="inline-block mt-1 mb-1 text-white">
+                <%= error %>
+            </span>
+        </div>
+    <% } %>
+        <% if(success.length>0){ %>
+            <div class="absolute top-5 left-1/2 -translate-x-1/2 -translate-y-1/2 p-3 rounded-md bg-green-500">
+                <span class="inline-block mt-1 mb-1 text-white">
+                    <%= success %>
+                </span>
+            </div>
+            <% } %>
+
+        
+        <div class="w-full h-screen flex px-20">
+            <div class="w-1/2 flex items-center justify-center h-screen">
+                <div class="w-full px-32">
+                     <h3 class="text-4xl">welcome <span class="text-blue-400 font-semibold">VOTER</span></h3><br>
+                    <h4 class="text-2xl mb-5">PROFILE</h4>
+                    <form autocomplete="off" action="/user/profile" method="get">
+                        <input class="px-5 rounded-full py-3 mt-2 bg-blue-500 text-white" type="submit"
+                            value="VIEW">
+                    </form>
+                </div>
+            </div>
+            <div class="w-1/2 flex items-center justify-center h-screen">
+                <div class="w-full px-32">
+                    <h4 class="text-2xl capitalize mb-5">PASSWORD UPDATE</h4>
+                    <form autocomplete="off" action="/user/password" method="post">
+                        <input
+                            class="block bg-zinc-100 w-full px-3 py-2 border-[1px] rounded-md mb-3 border-zinc-200"
+                            type="password" placeholder="current Password" name="currentPassword">
+                        <input
+                            class="block bg-zinc-100 w-full px-3 py-2 border-[1px] rounded-md mb-3 border-zinc-200"
+                            type="password" placeholder="New Password" name="newPassword">
+                        <input class="px-5 block rounded-full py-3 mt-2 bg-blue-500 text-white" type="submit"
+                            value="Update">
+                    </form>
+                </div>
+            </div>
+            <div class="w-1/2 flex items-center justify-center h-screen">
+                <div class="w-full px-32">
+                    <h4 class="text-2xl capitalize mb-5"> CLICK <br>TO VOTE</h4>
+                    <form autocomplete="off" action="/candidate" method="get">
+                       
+                        <input class="px-5 block rounded-full py-3 mt-2 bg-blue-500 text-white" type="submit"
+                            value="VOTE">
+                    </form>
+                </div>
+            </div>
+
+
+        </div>
+        <%- include('./partials/footer') %>
