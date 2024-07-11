@@ -51,7 +51,7 @@ router.post('/signup', async (req, res) =>{
     }
     catch(err){
 
-        req.flash("error", "Internal server error");
+        req.flash("error", "error,role canbe voter or admin only");
           return res.redirect("/");
        // console.log(err);
         //res.status(500).json({error: 'Internal Server Error'});
